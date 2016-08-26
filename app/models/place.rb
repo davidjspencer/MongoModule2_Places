@@ -193,10 +193,24 @@ class Place
 # 		returns the resulting view (i.e., the result of find())
 
 	def self.near(point, max_meters=nil)
-		near = { "$geometry": point.to_hash }  #{:type=>"Point", :coordinates=>[@longitude, @latitude]}
+		near = { "$geometry": point.to_hash }  #to_hash == {:type=>"Point", :coordinates=>[@longitude, @latitude]}
 		near[:$maxDistance] = max_meters unless max_meters.nil?
 		self.collection.find(:"geometry.geolocation"=>{:$near=>near})
 	end
+
+	# Create an instance method (also) called near that wraps the 
+	# class method you just finished. This method must:
+
+	# 		accept an optional parameter that sets a maximum distance threshold in meters
+	# 		locate all places within the specified maximum distance threshold
+	# 		return the collection of matching documents as a collection of 
+	# 				Place instances using the to_places class method added earlier.
+
+	def near(max_meters=nil)
+		self.class.to_places(self.class.near(@location, max_meters))
+	end
+
+
 end
 
 
